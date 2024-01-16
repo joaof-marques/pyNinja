@@ -1,6 +1,6 @@
 import pygame
 import os
-from characters import Hero
+from characters import Hero, Enemy
 
 class Game:
     def __init__(self) -> None:
@@ -15,6 +15,9 @@ class Game:
         self.hero = Hero()
         self.group_single = pygame.sprite.GroupSingle()
         self.group_single.add(self.hero)
+        
+        self.mobs = []
+        self.mobs_group = pygame.sprite.Group()
         
     def set_background(self) -> None:
         background_surface = pygame.image.load(os.path.join("sprites","enviroment", "background.png")).convert_alpha()
@@ -34,8 +37,13 @@ class Game:
                     exit()
                     
             self.set_background()
+            if len(self.mobs) < 1:
+                self.mobs.append(Enemy("fire_mob", 6))
+                self.mobs_group.add(self.mobs[-1])
             self.hero.player_inputs()
-            self.hero.apply_accelerations()            
+            self.hero.apply_accelerations()  
+            self.mobs_group.update()  
+            self.mobs_group.draw(self.screen)        
             self.group_single.update() #handle animations swap
             self.group_single.draw(self.screen)
             
