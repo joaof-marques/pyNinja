@@ -5,10 +5,7 @@ class pyNinja_characters:
     def __init__(self, hp, damage) -> None:
         self.hp = hp
         self.damage = damage
-        self.ground_level = 775
-        
-        
-        
+        self.ground_level = 775           
         self.frame_pos = 0
         
         
@@ -42,7 +39,7 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         self.gravity += 1
         self.y += self.gravity
         self.rect.bottom = self.y
-        if self.rect.bottom >= self.ground_level:            
+        if self.rect.bottom >= self.ground_level:
             self.rect.bottom = self.ground_level
             self.y = self.ground_level
             
@@ -50,7 +47,7 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         self.x += self.x_accel
         if self.x_accel > -1 and self.x_accel < 1:
             self.x_accel = 0
-            
+
 
     def player_inputs (self):
         keys = pygame.key.get_pressed()
@@ -88,8 +85,11 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         pass
 
 class Enemy (pygame.sprite.Sprite, pyNinja_characters):
-    def __init__(self) -> None:
+    def __init__(self, mob_type, idle_frame_count) -> None:
         self.hp = 600
         self.damage = 325
+        self.mob_type = mob_type
         pygame.sprite.Sprite.__init__(self)
         pyNinja_characters.__init__(self, self.hp,self.damage)
+        
+        self.idle_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "idle_frames", f"{cont}_idle_frame.png")) for cont in range(1,idle_frame_count+1)]
