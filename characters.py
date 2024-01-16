@@ -41,6 +41,7 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         self.rect.bottom = self.y
         if self.y >= self.ground_level:
             self.y = self.ground_level
+            self.rect.bottom = self.ground_level
             
         self.x_accel *= 0.75
         self.x += self.x_accel
@@ -63,9 +64,13 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
             self.moved_left = False
             
     def update (self):
+        
+        self.player_inputs()
+        self.apply_accelerations()  
+
         if self.rect.bottom >= self.ground_level and self.x_accel == 0:
             self.current_animation = self.idle_frames
-        elif self.rect.bottom == self.ground_level and self.x_accel != 0:
+        elif self.rect.bottom >= self.ground_level and self.x_accel != 0:
             self.current_animation = self.run_frames
         # multiply and floor division to slow down the animation loop        
         if self.index >= (len(self.current_animation))*5:
@@ -92,6 +97,7 @@ class Enemy (pygame.sprite.Sprite, pyNinja_characters):
         pyNinja_characters.__init__(self, self.hp,self.damage)
         
         self.idle_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "idle_frames", f"{cont}_idle_frame.png")) for cont in range(1,idle_frame_count+1)]
+        self.run_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "run_frames", f"{cont}_run_frame.png")) for cont in range(1,8)]
         self.current_animation = self.idle_frames
         self.index = 0
         
@@ -103,8 +109,15 @@ class Enemy (pygame.sprite.Sprite, pyNinja_characters):
         self.image = self.current_animation[0]
         self.rect = self.image.get_rect(midbottom = (self.x, self.y))
         self.moved_left = False
+     
+    def apply_accelerations(self, hero_x):
+        self.x_accel = (hero_x - self.x)*0.05
+        self.x += self.x_accel
         
-    def update (self):
+    def update (self, hero_x):
+        
+        self.apply_accelerations(hero_x)
+        
         if self.rect.bottom >= self.ground_level and self.x_accel == 0:
             self.current_animation = self.idle_frames
         elif self.rect.bottom == self.ground_level and self.x_accel != 0:
