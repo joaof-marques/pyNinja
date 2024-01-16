@@ -36,11 +36,10 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         self.gravity = 0 
 
     def apply_accelerations(self):
-        self.gravity += 1
+        self.gravity += 1.8
         self.y += self.gravity
         self.rect.bottom = self.y
-        if self.rect.bottom >= self.ground_level:
-            self.rect.bottom = self.ground_level
+        if self.y >= self.ground_level:
             self.y = self.ground_level
             
         self.x_accel *= 0.75
@@ -53,7 +52,7 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         keys = pygame.key.get_pressed()
                     
         if keys[pygame.K_SPACE] and self.rect.bottom >= self.ground_level:
-            self.gravity = -15
+            self.gravity = -30
             self.current_animation = self.jump_frames
             self.index = 0
         if keys[pygame.K_a]:
@@ -93,3 +92,27 @@ class Enemy (pygame.sprite.Sprite, pyNinja_characters):
         pyNinja_characters.__init__(self, self.hp,self.damage)
         
         self.idle_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "idle_frames", f"{cont}_idle_frame.png")) for cont in range(1,idle_frame_count+1)]
+        self.current_animation = self.idle_frames
+        self.index = 0
+        
+        self.x = 1200
+        self.y = self.ground_level
+        self.x_accel = 0
+        self.gravity = 0
+        
+        self.image = self.current_animation[0]
+        self.rect = self.image.get_rect(midbottom = (self.x, self.y))
+        self.moved_left = False
+        
+    def update (self):
+        if self.rect.bottom >= self.ground_level and self.x_accel == 0:
+            self.current_animation = self.idle_frames
+        elif self.rect.bottom == self.ground_level and self.x_accel != 0:
+            self.current_animation = self.run_frames
+        # multiply and floor division to slow down the animation loop        
+        if self.index >= (len(self.current_animation))*5:
+            self.index = 0
+            
+        self.image = pygame.transform.flip(self.current_animation[self.index//5], self.moved_left, False)
+        self.rect = self.image.get_rect(midbottom = (self.x, self.y))
+        self.index+=1
