@@ -20,16 +20,19 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         pygame.sprite.Sprite.__init__(self)
         pyNinja_characters.__init__(self, self.hp,self.damage)    
                 
+        #animation
         self.idle_frames = [pygame.image.load(os.path.join("sprites", "hero", "idle_frames", f"frame_idle_{cont}.png")) for cont in range(1,7)]  
         self.run_frames = [pygame.image.load(os.path.join("sprites", "hero", "run_frames", f"frame_run_{cont}.png")) for cont in range(1,9)]
         self.jump_frames = [pygame.image.load(os.path.join("sprites", "hero", "jump_frames", f"frame_jump_{cont}.png")) for cont in range(1,9)]
         self.current_animation = self.idle_frames
         self.index = 0
         
+        #surface and rect for draw method
         self.image = self.idle_frames[self.index]
         self.rect = self.image.get_rect(midbottom = (700,self.ground_level))
         self.moved_left = False #used to determine horizontal direction
         
+        #positioning
         self.x = 700
         self.y = self.ground_level
         self.x_accel = 0
@@ -83,4 +86,10 @@ class Hero(pygame.sprite.Sprite, pyNinja_characters):
         
     def attack (self) -> None:
         pass
-    
+
+class Enemy (pygame.sprite.Sprite, pyNinja_characters):
+    def __init__(self) -> None:
+        self.hp = 600
+        self.damage = 325
+        pygame.sprite.Sprite.__init__(self)
+        pyNinja_characters.__init__(self, self.hp,self.damage)
