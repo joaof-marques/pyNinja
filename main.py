@@ -1,6 +1,6 @@
 import pygame
 import os
-from characters import Hero, Enemy
+from characters_classes import Hero, Enemy
 
 class Game:
     def __init__(self) -> None:
@@ -9,7 +9,6 @@ class Game:
         self.ground_level = 750
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.fps = pygame.time.Clock()
-        # self.gravity = 0
         
         # Characters
         self.hero = Hero()
@@ -40,11 +39,11 @@ class Game:
             if len(self.mobs) < 1:
                 self.mobs.append(Enemy("fire_mob", 6))
                 self.mobs_group.add(self.mobs[-1])
-            self.hero.player_inputs()
-            self.hero.apply_accelerations()  
-            self.mobs_group.update()  
-            self.mobs_group.draw(self.screen)        
+            
+            
+            self.mobs_group.update(self.hero.x)  
             self.group_single.update() #handle animations swap
+            self.mobs_group.draw(self.screen)        
             self.group_single.draw(self.screen)
             
             pygame.display.update()

@@ -98,6 +98,7 @@ class Enemy (pygame.sprite.Sprite, pyNinja_characters):
         
         self.idle_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "idle_frames", f"{cont}_idle_frame.png")) for cont in range(1,idle_frame_count+1)]
         self.run_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "run_frames", f"{cont}_run_frame.png")) for cont in range(1,8)]
+        self.attack_frames = [pygame.image.load(os.path.join("sprites", "mobs", mob_type, "attack_frames", f"{cont}_attack_frame.png")) for cont in range(1,13)]
         self.current_animation = self.idle_frames
         self.index = 0
         
@@ -109,19 +110,33 @@ class Enemy (pygame.sprite.Sprite, pyNinja_characters):
         self.image = self.current_animation[0]
         self.rect = self.image.get_rect(midbottom = (self.x, self.y))
         self.moved_left = False
-     
-    def apply_accelerations(self, hero_x):
-        self.x_accel = (hero_x - self.x)*0.05
-        self.x += self.x_accel
+    
+    def attack (self): #work in progress
+        self.current_animation = self.attack_frames
+        self.x_accel += 80
+    
+    def apply_movements(self, hero_x):
+        distance_mob_to_hero = hero_x - self.x
         
+        self.x_accel = (distance_mob_to_hero)*0.05
+        self.x += self.x_accel
+        self.moved_left = (True if self.x_accel < 0 else False)
+        
+        
+        if distance_mob_to_hero < 150 and distance_mob_to_hero > -150:
+            self.attack()
+            
+            
     def update (self, hero_x):
         
-        self.apply_accelerations(hero_x)
+        self.apply_movements(hero_x)
         
         if self.rect.bottom >= self.ground_level and self.x_accel == 0:
             self.current_animation = self.idle_frames
         elif self.rect.bottom == self.ground_level and self.x_accel != 0:
             self.current_animation = self.run_frames
+            
+            
         # multiply and floor division to slow down the animation loop        
         if self.index >= (len(self.current_animation))*5:
             self.index = 0
